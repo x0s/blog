@@ -1,0 +1,19 @@
+---
+title: "About"
+image: profile.jpg
+about:
+  template: jolla
+  links:
+    - icon: github
+      text: Github
+      href: https://github.com/x0s
+    - icon: stack-overflow
+      text: Stack Overflow
+      href: https://stackoverflow.com/users/3581903/x0s
+
+
+---
+
+About this blog
+
+A blog written by a Machine Learning Engineer who enjoys setting the pipes in line with data to deliver value in meaningful projects.
