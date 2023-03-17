@@ -1,0 +1,22 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "A tech blog made with curiosity"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/x0s
+      - icon: stack-overflow
+        href: https://stackoverflow.com/users/3581903/x0s
+format:
+  html:
+    #highlight-style: arrow-light
+    theme: superhero
+    css: styles.css
+
+
+
+

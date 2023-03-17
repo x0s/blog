@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="x0s">
+<meta name="dcterms.date" content="2023-03-16">
+
+<title>A tech blog made with curiosity - How to fluenty forward Makefile’s targets to a Docker container ?</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../../styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../index.html">
+    <span class="navbar-title">A tech blog made with curiosity</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../about.html">
+ <span class="menu-text">about.html</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/x0s"><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://stackoverflow.com/users/3581903/x0s"><i class="bi bi-stack-overflow" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">How to fluenty forward Makefile’s targets to a Docker container ?</h1>
+                                <div class="quarto-categories">
+                <div class="quarto-category">cli</div>
+                <div class="quarto-category">makefile</div>
+                <div class="quarto-category">bash</div>
+                <div class="quarto-category">docker</div>
+                <div class="quarto-category">container</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>x0s </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">March 16, 2023</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#what-is-it-about" id="toc-what-is-it-about" class="nav-link active" data-scroll-target="#what-is-it-about">What is it about ?</a></li>
+  <li><a href="#introducing-a-use-case" id="toc-introducing-a-use-case" class="nav-link" data-scroll-target="#introducing-a-use-case">Introducing a use case</a></li>
+  <li><a href="#aliasing-make_in_container" id="toc-aliasing-make_in_container" class="nav-link" data-scroll-target="#aliasing-make_in_container">Aliasing <code>make_in_container</code></a></li>
+  <li><a href="#how-to-retrieve-all-targets" id="toc-how-to-retrieve-all-targets" class="nav-link" data-scroll-target="#how-to-retrieve-all-targets">How to retrieve all targets ?</a></li>
+  <li><a href="#how-to-pass-all-arguments" id="toc-how-to-pass-all-arguments" class="nav-link" data-scroll-target="#how-to-pass-all-arguments">How to pass all arguments ?</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<section id="what-is-it-about" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-it-about">What is it about ?</h2>
+<p>We will see how to painlessly redirect makefile’s targets to a docker container keeping the API intuitive.</p>
+<p>What you will learn:</p>
+<ul>
+<li>How to automatically read a Makefile’s targets from another Makefile</li>
+<li>How to wrap Makefile targets to a docker container</li>
+<li>How to extract and pass Makefile arguments to another Makefile</li>
+</ul>
+</section>
+<section id="introducing-a-use-case" class="level2">
+<h2 class="anchored" data-anchor-id="introducing-a-use-case">Introducing a use case</h2>
+<p>Let’s say we’ve already built an application using <code>Makefile</code> to run tasks (ie: run tests, build a docker image, launch scripts) As good practice we developed it within an virtual environment (ie: conda) and it worked perfectly… until one day… as the application grew, it had to deal with different versions of python, compiler dependencies… things that a conda environment cannot handle alone So we decided to wrap your app in a container.</p>
+<p>To sum up, from being able to do:</p>
+<pre class="{bash}"><code>(my_env) $ make test
+(my_env) $ make game WHEN=2022/01-2</code></pre>
+<p>we also want to be able to do:</p>
+<pre class="{bash}"><code>(my_env) $ make_in_container test
+(my_env) $ make_in_container game WHEN=2022/01-2</code></pre>
+<p>Why choosing <code>make_in_container</code> ?</p>
+<ul>
+<li><p>We don’t want to duplicate Makefiles nor the targets (<a href="https://en.wikipedia.org/wiki/Don%27t_repeat_yourself">DRY</a>)</p></li>
+<li><p>We favour clarity, avoiding mingling arguments, prefering <code class="sourceCode bash"><span class="ex">make_in_container</span> test_this DAY=2022/01</code> to <code class="sourceCode bash"><span class="fu">make</span> test_this SKIP_CONTAINER=false DAY=2022/01</code>. Also with this option we would have to manually prefix every command of the original <code>Makefile</code></p></li>
+<li><p>We also favour extensibility, what if later we want to switch from <code>Docker</code> to <code>Podman</code> ? <code>make_in_container</code> looks better than <code>make_in_docker</code></p></li>
+</ul>
+<p>To illustrate this, we will use the <a href="https://github.com/x0s/advent-of-code">git repository</a> I worked on to do the famous <a href="https://adventofcode.com/">Advent Of Code</a> ! So we have this tree structure:</p>
+<pre><code>Advent-Of-Code
+├── Dockerfile
+├── Makefile
+├── Makefile_docker
+├── advent_of_code/
+├── tests/
+| ...</code></pre>
+<p>There are two makefiles:</p>
+<ul>
+<li><p>a <a href="https://github.com/x0s/advent-of-code/blob/main/Makefile">Makefile</a> having the project usual targets (<code>install</code>,<code>build</code>, <code>test</code> …)</p></li>
+<li><p>a <a href="https://github.com/x0s/advent-of-code/blob/main/Makefile_dockerproject">Makefile_docker</a> aiming at forwarding the targets to a docker container.</p></li>
+</ul>
+<p>The workflow is the following:</p>
+<pre class="{bash}"><code># Install the application following the guidelines
+# - Create conda environment
+# - make install
+# - ...
+
+# Build the docker image
+(my_env) $ make build
+
+# Run some tasks in container
+(my_env) $ make_in_container test_this DAY=2022/01</code></pre>
+<p>Once the image is built, a user should be able to run any task within the container as soon as the conda environment is active. We’ll see in next sessions how to settle this.</p>
+</section>
+<section id="aliasing-make_in_container" class="level2">
+<h2 class="anchored" data-anchor-id="aliasing-make_in_container">Aliasing <code>make_in_container</code></h2>
+<p>To avoid polluting system namespace (sourcing <code>~/.bashrc</code>), we want to enable the <code>make_in_container</code> command only when working in this project. Enabling it when we activate the conda environment seems the right moment. Let’s configure it at building time:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from Makefile</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">build:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@docker</span> build <span class="at">--tag</span> aoc-image <span class="at">-f</span> Dockerfile .</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># make "make_in_container" command available when conda env is activated</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">ifdef</span> CONDA_PREFIX</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@</span><span class="va">$(</span><span class="bu">eval</span> PATH_ALIAS := <span class="va">${CONDA_PREFIX}</span>/etc/conda/activate.d/aliases_.sh<span class="va">)</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@mkdir</span> <span class="at">-p</span> <span class="va">${CONDA_PREFIX}</span>/etc/conda/activate.d</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@echo</span> <span class="st">"#!/bin/bash"</span> <span class="op">&gt;&gt;</span> <span class="va">$(</span><span class="ex">PATH_ALIAS</span><span class="va">)</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@echo</span> <span class="st">"alias make_in_container='make -f Makefile_docker'"</span> <span class="op">&gt;&gt;</span> <span class="va">$(</span><span class="ex">PATH_ALIAS</span><span class="va">)</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@source</span> <span class="va">$(</span><span class="ex">PATH_ALIAS</span><span class="va">)</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="ex">endif</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First, we build and image named <code>aoc-image</code> using <code>Dockerfile</code>. Then if a conda environment is active (and it should!), we write a little script this conda env will execute every time it is activated. Therefore <code>make_in_container</code> will redirect to using Makefile_docker as a makefile:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> make_in_container=<span class="st">'make -f Makefile_docker'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Of course, you can adapt this code to make it work with other environment manager (<a href="https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts">Virtualenvwrapper hooks</a> for instance)</p>
+</section>
+<section id="how-to-retrieve-all-targets" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-retrieve-all-targets">How to retrieve all targets ?</h2>
+<p>Here we want to automatically forward targets to the docker container. First we retrieve the targets from <code>Makefile</code> using a snippet heavily inspired from <a href="https://stackoverflow.com/a/26339924/3581903">StackOverflow</a>. We can see the result by invoking <code>make_in_container list-targets</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from Makefile_docker</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Tag of docker image</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">NAME</span> := aoc-image</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Retrieve the AOC targets from main Makefile</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co"># inspired from https://stackoverflow.com/a/26339924/3581903</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="ex">AOC_TARGETS</span> := <span class="va">$(</span><span class="ex">shell</span> LC_ALL=C make <span class="at">-pRrq</span> <span class="at">-f</span> Makefile : <span class="dv">2</span><span class="op">&gt;</span>/dev/null <span class="dt">\</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span> <span class="fu">awk</span> <span class="at">-v</span> RS= <span class="at">-F:</span> <span class="st">'/(^|\n)\# Files(\n|$$)/,/(^|\n)\# Finished Make data base/ {if ($$1 !~ "^[\#.]") {print $$1}}'</span> <span class="dt">\</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span> <span class="fu">sort</span> <span class="kw">|</span> <span class="fu">egrep</span> <span class="at">-v</span> <span class="at">-e</span> <span class="st">'^[^[:alnum:]]'</span> <span class="at">-e</span> <span class="st">'^$@$$'</span> <span class="dt">\</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        <span class="kw">|</span> <span class="fu">xargs</span> <span class="kw">|</span> <span class="fu">tr</span> <span class="at">-d</span> :<span class="va">)</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="ex">.PHONY</span> : <span class="va">$(</span><span class="ex">AOC_TARGETS</span><span class="va">)</span> list_targets</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward any AOC_TARGET to the container</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="va">$(</span><span class="ex">AOC_TARGETS</span><span class="va">)</span><span class="ex">:</span></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@docker</span> run <span class="at">-it</span> <span class="va">${NAME}</span> make <span class="va">$@</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="ex">list-targets:</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@echo</span> <span class="va">$(</span><span class="ex">AOC_TARGETS</span><span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With this setting, calls like <code>make_in_container help</code> or <code>make_in_container test</code> properly forward <code>make help</code> and <code>make test</code> in the container. But what about <code>make_in_container test_this DAY=2022/01</code> ? For now it only forwards <code>make_in_container test_this</code>. Let’s see how to pass all arguments to the container.</p>
+</section>
+<section id="how-to-pass-all-arguments" class="level2">
+<h2 class="anchored" data-anchor-id="how-to-pass-all-arguments">How to pass all arguments ?</h2>
+<p>As per <a href="https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html">the manual</a>, <code>$@</code> only keeps the target name. Calling <code>make_in_container test_this DAY=2022/01</code> will set <code>$@</code> to <code>test_this</code> and <code>DAY</code> to <code>2022/01</code>. To retrieve the argument, we have to check the environment variables. Here we will store the arguments’ names in <code>AOC_ARGS</code> (it is possible to retrieve it automatically with regexp on the Makefile help, but it would add unecessary complexity here).</p>
+<p>For each argument, <code>get_args</code> will check if an environment variable is set (like <code>DAY</code> to <code>2022/01</code>), and when it is, will return the string <code>DAY=2022/01</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract valid arguments and pass them with their value</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ie: calling "make_in_container game WHEN=2022/01-1" will result in passing "WHEN=2022/01-1"</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="ex">get_args</span> = <span class="va">$(</span><span class="ex">foreach</span> arg,<span class="va">$(</span><span class="ex">AOC_ARGS</span><span class="va">)</span>,<span class="va">$(</span><span class="cf">if</span> <span class="va">$(</span><span class="ex">value</span> <span class="va">$(</span><span class="ex">arg</span><span class="va">))</span><span class="ex">,</span><span class="va">$(</span><span class="ex">arg</span><span class="va">)</span><span class="ex">=</span><span class="va">$($(</span><span class="ex">arg</span><span class="va">))))</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Arguments to be passed to targets accordin to main Makefile</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">AOC_ARGS</span> = EDIT TOKEN WHEN VERBOSE DAY</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Therefore, we update the redirection so it can forward the arguments to the container. <code>make_in_container test_this DAY=2022/01</code> will be forwarded as <code>make test_this DAY=2022/01</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward any AOC_TARGET to the container   </span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ie: "make_in_container test VERBOSE=1" is run as "make test VERBOSE=1" in the container</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">$(</span><span class="ex">AOC_TARGETS</span><span class="va">)</span><span class="ex">:</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@docker</span> run <span class="at">-it</span> <span class="va">${NAME}</span> make <span class="va">$@</span> <span class="va">$(</span><span class="ex">call</span> get_args<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can reach the full source <a href="https://github.com/x0s/advent-of-code/blob/main/Makefile_docker">here</a></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>We’ve seen how to wrap all makefile targets so they can be forwarded to a container without changing the API: Everything that was runnable with <code>make ...</code> is now also runnable in a container with <code>make_in_container ...</code></p>
+
+
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{x0s2023,
+  author = {x0s},
+  title = {How to Fluenty Forward {Makefile’s} Targets to a {Docker}
+    Container\,?},
+  date = {2023-03-16},
+  langid = {en}
+}
+</code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-x0s2023" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
+x0s. 2023. <span>“How to Fluenty Forward Makefile’s Targets to a Docker
+Container ?”</span> March 16, 2023.
+</div></div></section></div></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
