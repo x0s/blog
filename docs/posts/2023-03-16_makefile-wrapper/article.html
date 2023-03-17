@@ -9,7 +9,7 @@
 <meta name="author" content="x0s">
 <meta name="dcterms.date" content="2023-03-16">
 
-<title>A tech blog made with curiosity - How to fluenty forward Makefile’s targets to a Docker container ?</title>
+<title>A tech blog made with curiosity - How to fluently forward Makefile’s targets to a Docker container ?</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -168,7 +168,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">How to fluenty forward Makefile’s targets to a Docker container ?</h1>
+      <h1 class="title">How to fluently forward Makefile’s targets to a Docker container ?</h1>
                                 <div class="quarto-categories">
                 <div class="quarto-category">cli</div>
                 <div class="quarto-category">makefile</div>
@@ -237,7 +237,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </section>
 <section id="introducing-a-use-case" class="level2">
 <h2 class="anchored" data-anchor-id="introducing-a-use-case">Introducing a use case</h2>
-<p>Let’s say we’ve already built an application using <code>Makefile</code> to run tasks (ie: run tests, build a docker image, launch scripts) As good practice we developed it within an virtual environment (ie: conda) and it worked perfectly… until one day… as the application grew, it had to deal with different versions of python, compiler dependencies… things that a conda environment cannot handle alone So we decided to wrap your app in a container.</p>
+<p>Let’s say we’ve already built an application using <code>Makefile</code> to run tasks (ie: run tests, build a docker image, launch scripts). As good practice we developed it within an virtual environment (ie: conda) and it worked perfectly… until one day… as the application grew, it had to deal with different versions of python, compiler dependencies… things that a conda environment cannot handle alone. So we decided to wrap your app in a container.</p>
 <p>To sum up, from being able to do:</p>
 <pre class="{bash}"><code>(my_env) $ make test
 (my_env) $ make game WHEN=2022/01-2</code></pre>
@@ -297,11 +297,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="bu">alias</span> make_in_container=<span class="st">'make -f Makefile_docker'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Of course, you can adapt this code to make it work with other environment manager (<a href="https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts">Virtualenvwrapper hooks</a> for instance)</p>
+<p>Of course, you can adapt this code to make it work with other environment manager (<a href="https://virtualenvwrapper.readthedocs.io/en/latest/scripts.html#scripts">Virtualenvwrapper hooks</a> for instance).</p>
 </section>
 <section id="how-to-retrieve-all-targets" class="level2">
 <h2 class="anchored" data-anchor-id="how-to-retrieve-all-targets">How to retrieve all targets ?</h2>
-<p>Here we want to automatically forward targets to the docker container. First we retrieve the targets from <code>Makefile</code> using a snippet heavily inspired from <a href="https://stackoverflow.com/a/26339924/3581903">StackOverflow</a>. We can see the result by invoking <code>make_in_container list-targets</code></p>
+<p>Here we want to automatically forward targets to the docker container. First we retrieve the targets from <code>Makefile</code> using a snippet heavily inspired from <a href="https://stackoverflow.com/a/26339924/3581903">StackOverflow</a>. We can see the result by invoking <code>make_in_container list-targets</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># from Makefile_docker</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -338,31 +338,31 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Arguments to be passed to targets accordin to main Makefile</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="ex">AOC_ARGS</span> = EDIT TOKEN WHEN VERBOSE DAY</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Therefore, we update the redirection so it can forward the arguments to the container. <code>make_in_container test_this DAY=2022/01</code> will be forwarded as <code>make test_this DAY=2022/01</code></p>
+<p>Therefore, we update the redirection so it can forward the arguments to the container. <code>make_in_container test_this DAY=2022/01</code> will be forwarded as <code>make test_this DAY=2022/01</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Forward any AOC_TARGET to the container   </span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ie: "make_in_container test VERBOSE=1" is run as "make test VERBOSE=1" in the container</span></span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="va">$(</span><span class="ex">AOC_TARGETS</span><span class="va">)</span><span class="ex">:</span></span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">@docker</span> run <span class="at">-it</span> <span class="va">${NAME}</span> make <span class="va">$@</span> <span class="va">$(</span><span class="ex">call</span> get_args<span class="va">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>You can reach the full source <a href="https://github.com/x0s/advent-of-code/blob/main/Makefile_docker">here</a></p>
+<p>You can reach the full source <a href="https://github.com/x0s/advent-of-code/blob/main/Makefile_docker">here</a>.</p>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>We’ve seen how to wrap all makefile targets so they can be forwarded to a container without changing the API: Everything that was runnable with <code>make ...</code> is now also runnable in a container with <code>make_in_container ...</code></p>
+<p>We’ve seen how to wrap all makefile targets so they can be forwarded to a container without changing the API: Everything that was runnable with <code>make ...</code> is now also runnable in a container with <code>make_in_container ...</code>.</p>
 
 
 </section>
 
 <div id="quarto-appendix" class="default"><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Reuse</h2><div quarto-reuse="quarto-reuse" class="quarto-appendix-contents"><a rel="license" href="https://creativecommons.org/licenses/by/4.0/">https://creativecommons.org/licenses/by/4.0/</a></div></section><section class="quarto-appendix-contents"><h2 class="anchored quarto-appendix-heading">Citation</h2><div><div class="quarto-appendix-secondary-label">BibTeX citation:</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{x0s2023,
   author = {x0s},
-  title = {How to Fluenty Forward {Makefile’s} Targets to a {Docker}
+  title = {How to Fluently Forward {Makefile’s} Targets to a {Docker}
     Container\,?},
   date = {2023-03-16},
   langid = {en}
 }
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre><div class="quarto-appendix-secondary-label">For attribution, please cite this work as:</div><div id="ref-x0s2023" class="csl-entry quarto-appendix-citeas" role="doc-biblioentry">
-x0s. 2023. <span>“How to Fluenty Forward Makefile’s Targets to a Docker
+x0s. 2023. <span>“How to Fluently Forward Makefile’s Targets to a Docker
 Container ?”</span> March 16, 2023.
 </div></div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
