@@ -17,6 +17,9 @@ format:
     theme: superhero
     css: styles.css
 
+comments:
+  giscus:
+    repo: x0s/blog
 
 
 
