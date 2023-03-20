@@ -24,3 +24,7 @@ execute:
 
 # Default fields for citation
 citation: true
+
+comments:
+  giscus:
+    repo: x0s/blog

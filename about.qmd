@@ -1,5 +1,6 @@
 ---
 title: "About"
+comments: false
 image: profile.jpg
 about:
   template: jolla
@@ -10,9 +11,6 @@ about:
     - icon: stack-overflow
       text: Stack Overflow
       href: https://stackoverflow.com/users/3581903/x0s
-comments: false
-
-
 ---
 
 About this blog
