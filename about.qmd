@@ -1,7 +1,7 @@
 ---
 title: "About"
 comments: false
-image: profile.jpg
+image: profile.png
 about:
   template: jolla
   links:
@@ -12,7 +12,5 @@ about:
       text: Stack Overflow
       href: https://stackoverflow.com/users/3581903/x0s
 ---
-
-About this blog
 
 A blog written by a Machine Learning Engineer who enjoys setting the pipes in line with data to deliver value in meaningful projects.
