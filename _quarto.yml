@@ -17,6 +17,7 @@ format:
     #highlight-style: arrow-light
     theme: lumen
     css: styles.css
+    page-layout: article
 
 
 
