@@ -232,7 +232,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <section id="what-is-it-about" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-it-about">What is it about ?</h2>
 <p>In this post, we will construct and deconstruct the Singleton Pattern in order to hone our understanding of <em>object instantiation</em> in Python (through Inheritance, Metaprogramming and Multithreading).</p>
-<p>from <a href="https://en.wikipedia.org/wiki/Singleton_pattern">wikipedia</a>: <em>In software engineering, the <strong>singleton pattern</strong> is a software design pattern that restricts the instantiation of a class to a singular instance.</em></p>
+<p>From <a href="https://en.wikipedia.org/wiki/Singleton_pattern">Wikipedia</a>: <em>In software engineering, the <strong>singleton pattern</strong> is a software design pattern that restricts the instantiation of a class to a singular instance.</em></p>
 <p>As an example, we will <em>try</em> to define as a singleton a class named <code>Logger</code> representing a logging component for an application. As we usually want a logger to be a global ressource for documenting what an application is actually processing.</p>
 <p>We will make successive attempts to build such a singleton. On this journey, we will encounter(and tackle) various problems, giving us an opportunity to review instantiation mechanics in Python. Here is a summary on the methods/challenges we will cover :</p>
 <ul>
@@ -473,8 +473,8 @@ Instantiated Logger in thread 23812
 Instantiated LoggerThreadSafe in thread 16288</code></pre>
 </div>
 </div>
-<p>Yes, we found a version fo the singleton that is Thread-safe.</p>
-<p>In multithreading, most of the time, the instance will be already registered. For efficiency and minimizing race condition, instead of Looking(LBYL) Before You Leap(LBYL), we may find it Easier to Ask for Forgiveness than Permission (EAFP). Trying to directly return the instance should be quicker than checking first if it is available:</p>
+<p>Yes, we found a version for the singleton that is Thread-safe.</p>
+<p>In multithreading, most of the time, the instance will already be registered. For efficiency and minimizing race condition, instead of Looking Before You Leap(LBYL), we may find it Easier to Ask for Forgiveness than Permission (EAFP). Trying to directly return the instance should be quicker than checking first if it is available:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SingletonThreadSafe(<span class="bu">type</span>):</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    _instances <span class="op">=</span> {}</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    _lock <span class="op">=</span> Lock()</span>
