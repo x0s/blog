@@ -515,6 +515,7 @@ Instantiated LoggerThreadSafe in thread 16288</code></pre>
 <pre><code>Logger is a Singleton</code></pre>
 </div>
 </div>
+<p>To cope with the <em>deadlock</em>, we can define the <code>Lock</code> at class definition. Metaclass make classes through their <code>__new__</code> method. Let’s bind one and only one <code>Lock</code> to each class, when they are defined. This way the <code>Lock</code> will only be shared between <em>all instantiations</em> of a given class:</p>
 <div class="cell" data-execution_count="297">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SingletonDeadlockFree(<span class="bu">type</span>):</span>
 <span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Each class using this Singleton metaclass has its own Lock,</span></span>
