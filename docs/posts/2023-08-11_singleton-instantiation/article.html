@@ -269,7 +269,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>Logger is a Singleton</code></pre>
 </div>
 </div>
-<p>It seems to work, but we may encounter some difficulties that may break the singleton: - Risk 1: Reversing Bases - Python’s Method Resolution Order operates from left to right, Child classes have to first inherit from Singleton to benefit from its <code>__new__</code> method: <code>class Logger(Singleton, LoggerBase)</code>. Reversing order may neutralize the Singleton (if LoggerBase defines its own <code>__new__</code> method) - Risk 2: Overriding <code>__new__</code> - If a child class overrides its <code>__new__</code> method, it redefines instanciation and may produce non-singleton objects</p>
+<p>It seems to work, but we may encounter some difficulties that may break the singleton:</p>
+<ul>
+<li>Risk 1: Reversing Bases
+<ul>
+<li>Python’s Method Resolution Order operates from left to right, Child classes have to first inherit from Singleton to benefit from its <code>__new__</code> method: <code>class Logger(Singleton, LoggerBase)</code>. Reversing order may neutralize the Singleton (if LoggerBase defines its own <code>__new__</code> method)</li>
+</ul></li>
+<li>Risk 2: Overriding <code>__new__</code>
+<ul>
+<li>If a child class overrides its <code>__new__</code> method, it redefines instanciation and may produce non-singleton objects</li>
+</ul></li>
+</ul>
 <p>Let’s see:</p>
 <div class="cell" data-execution_count="66">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoggerBase: </span>
