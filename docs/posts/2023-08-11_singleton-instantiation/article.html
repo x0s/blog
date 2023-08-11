@@ -331,7 +331,15 @@ In Test.__new__
 In Test.__init__</code></pre>
 </div>
 </div>
-<p>The builtin <code>type.__call__</code> is called line 4, is in charge of: - calling <code>Test.__new__</code> to create a Test object (allocating memory for it) - calling <code>Test.__init__</code> to initialize the newly created object only if - <code>Test.__new__</code> has previously returned an object of type <code>Test</code> and - <code>Test.__init__</code> is defined</p>
+<p>The builtin <code>type.__call__</code> is called line 4, is in charge of:</p>
+<ul>
+<li>calling <code>Test.__new__</code> to create a Test object (allocating memory for it)</li>
+<li>calling <code>Test.__init__</code> to initialize the newly created object only if
+<ul>
+<li><code>Test.__new__</code> has previously returned an object of type <code>Test</code> and</li>
+<li><code>Test.__init__</code> is defined</li>
+</ul></li>
+</ul>
 <p>Then, it seems a good choice to control instantiation from within the Metaclass <code>__call__</code> to enforce the singleton and neutralize any child overriding. Let’s try:</p>
 <div class="cell" data-execution_count="75">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Solution 1 (not thread safe)</span></span>
