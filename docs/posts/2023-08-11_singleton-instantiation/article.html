@@ -509,18 +509,17 @@ Instantiated LoggerThreadSafe in thread 16288</code></pre>
 <span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>        <span class="co"># DBConnection already aqcuired it</span></span>
 <span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.logger <span class="op">=</span> Logger()</span>
 <span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>is_singleton(Logger)</span>
-<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># is_singleton(DBConnection) # will deadlock </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>is_singleton(Logger)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a><span class="co"># is_singleton(DBConnection) # will deadlock </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Logger is a Singleton</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="297">
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SingletonDeadlockFree(<span class="bu">type</span>):</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Each class using this  Singleton metaclass has its own Lock,</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Each class using this Singleton metaclass has its own Lock,</span></span>
 <span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="co">    preventing them from deadlock"""</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__new__</span>(metacls, cls, bases, clsdict, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""The lock is set at class definition to avoid deadlocking between coupled classes"""</span></span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>        cls_with_lock <span class="op">=</span> <span class="bu">super</span>().<span class="fu">__new__</span>(metacls, cls, bases, clsdict)</span>
@@ -552,7 +551,7 @@ DBConnection is a Singleton</code></pre>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>On the path to designing the purest singleton we could, we reviewed how Python handles instantiation in its world of “everything is object”. We saw how inheritance could perturb instantiation and how metaclasses helped taking back control.</p>
-<p>We challenged our solution in multithreaded environments and learnt how to cope with <em>race conditions</em> and <em>deadlocks</em>. It pushed us to dive a little further into metaclasses. After every attempt, our Singleton got more robust, our understanding of Instantiation got deeper.</p>
+<p>We challenged our solution in multithreaded environments and learnt how to cope with <em>race conditions</em> and <em>deadlocks</em>. It pushed us to dive a little further into metaclasses. After every attempt, our Singleton got more robust, our understanding of Instantiation got sharper.</p>
 
 
 </section>
