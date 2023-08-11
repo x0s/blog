@@ -28,4 +28,4 @@ citation: true
 comments:
   giscus:
     repo: x0s/blog
-    theme: dark
+    theme: light

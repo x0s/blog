@@ -231,10 +231,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1>Dive the Singleton as an excuse to study Instantiation in Python</h1>
 <section id="what-is-it-about" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-it-about">What is it about ?</h2>
-<p>In this post, we will construct and deconstruct the Singleton Pattern in order to hone our understanding of <em>object instanciation</em> in Python (through Inheritance, Metaprogramming and Multithreading).</p>
-<p>from <a href="https://en.wikipedia.org/wiki/Singleton_pattern">wikipedia</a>: In software engineering, the <strong>singleton pattern</strong> is a software design pattern that restricts the instantiation of a class to a singular instance.</p>
+<p>In this post, we will construct and deconstruct the Singleton Pattern in order to hone our understanding of <em>object instantiation</em> in Python (through Inheritance, Metaprogramming and Multithreading).</p>
+<p>from <a href="https://en.wikipedia.org/wiki/Singleton_pattern">wikipedia</a>: <em>In software engineering, the <strong>singleton pattern</strong> is a software design pattern that restricts the instantiation of a class to a singular instance.</em></p>
 <p>As an example, we will <em>try</em> to define as a singleton a class named <code>Logger</code> representing a logging component for an application. As we usually want a logger to be a global ressource for documenting what an application is actually processing.</p>
-<p>We will make multiple attempts building successively on the previous one depending on the problems encountered. Here is a summary on the methods we will cover :</p>
+<p>We will make successive attempts to build such a singleton. On this journey, we will encounter(and tackle) various problems, giving us an opportunity to review instantiation mechanics in Python. Here is a summary on the methods/challenges we will cover :</p>
 <ul>
 <li>Attempt 1: Inheritance Overriding</li>
 <li>Attempt 2: Metaclass Calling</li>
@@ -331,7 +331,7 @@ In Test.__new__
 In Test.__init__</code></pre>
 </div>
 </div>
-<p>The builtin <code>type.__call__</code> is called line 4, is in charge of:</p>
+<p>The built-in <code>type.__call__</code> (line 4), is in charge of:</p>
 <ul>
 <li>calling <code>Test.__new__</code> to create a Test object (allocating memory for it)</li>
 <li>calling <code>Test.__init__</code> to initialize the newly created object only if
@@ -342,35 +342,34 @@ In Test.__init__</code></pre>
 </ul>
 <p>Then, it seems a good choice to control instantiation from within the Metaclass <code>__call__</code> to enforce the singleton and neutralize any child overriding. Let’s try:</p>
 <div class="cell" data-execution_count="75">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Solution 1 (not thread safe)</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Singleton(<span class="bu">type</span>):</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    _instances <span class="op">=</span> {}</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__call__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cls <span class="kw">not</span> <span class="kw">in</span> cls._instances:</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>            cls._instances[cls] <span class="op">=</span> <span class="bu">super</span>().<span class="fu">__call__</span>(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cls._instances[cls]</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoggerBase: </span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Overriding instance creation method __new__</span></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">object</span>.<span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Logger(LoggerBase, metaclass<span class="op">=</span>Singleton): <span class="cf">pass</span></span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Overriding __new__ as before</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoggerChild(Logger):</span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">object</span>.<span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>is_singleton(Logger)</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>is_singleton(LoggerChild)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Singleton(<span class="bu">type</span>):</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    _instances <span class="op">=</span> {}</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__call__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> cls <span class="kw">not</span> <span class="kw">in</span> cls._instances:</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>            cls._instances[cls] <span class="op">=</span> <span class="bu">super</span>().<span class="fu">__call__</span>(<span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cls._instances[cls]</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoggerBase: </span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Overriding instance creation method __new__</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">object</span>.<span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Logger(LoggerBase, metaclass<span class="op">=</span>Singleton): <span class="cf">pass</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Overriding __new__ as before</span></span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoggerChild(Logger):</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs):</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="bu">object</span>.<span class="fu">__new__</span>(cls, <span class="op">*</span>args, <span class="op">**</span>kwargs)</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>is_singleton(Logger)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>is_singleton(LoggerChild)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Logger is a Singleton
 LoggerChild is a Singleton</code></pre>
 </div>
 </div>
-<p>So far, so good. Finally, we found a solution that works on a singe thread, but what would happen if we instantiate the Logger on multiple Threads ?</p>
+<p>So far, so good. Finally, we found a solution that works on a single thread, but what would happen if we instantiate the Logger on multiple Threads ?</p>
 </section>
 <section id="attempt-3-multithreads-racing" class="level2">
 <h2 class="anchored" data-anchor-id="attempt-3-multithreads-racing">Attempt 3: Multithreads Racing</h2>
@@ -452,11 +451,10 @@ LoggerChild is a Singleton</code></pre>
 <span id="cb12-40"><a href="#cb12-40" aria-hidden="true" tabindex="-1"></a>        pool.close()</span>
 <span id="cb12-41"><a href="#cb12-41" aria-hidden="true" tabindex="-1"></a>        pool.join()</span>
 <span id="cb12-42"><a href="#cb12-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
-<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    execute(Logger)</span>
-<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">30</span>)</span>
-<span id="cb12-47"><a href="#cb12-47" aria-hidden="true" tabindex="-1"></a>    execute(LoggerThreadSafe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-43"><a href="#cb12-43" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="va">__name__</span> <span class="op">==</span> <span class="st">"__main__"</span>:</span>
+<span id="cb12-44"><a href="#cb12-44" aria-hidden="true" tabindex="-1"></a>    execute(Logger)</span>
+<span id="cb12-45"><a href="#cb12-45" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"-"</span> <span class="op">*</span> <span class="dv">30</span>)</span>
+<span id="cb12-46"><a href="#cb12-46" aria-hidden="true" tabindex="-1"></a>    execute(LoggerThreadSafe)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Overwriting thread_safety_test.py</code></pre>
 </div>
@@ -493,9 +491,9 @@ Instantiated LoggerThreadSafe in thread 16288</code></pre>
 </section>
 <section id="attempt-4-multithreads-deadlocking" class="level2">
 <h2 class="anchored" data-anchor-id="attempt-4-multithreads-deadlocking">Attempt 4: Multithreads Deadlocking</h2>
-<p>From <a href="https://en.wikipedia.org/wiki/Deadlock">Wikipedia</a>: In concurrent computing, <strong>deadlock</strong> is any situation in which no member of some group of entities can proceed because each waits for another member, including itself, to take action, such as sending a message or, more commonly, releasing a lock</p>
+<p>From <a href="https://en.wikipedia.org/wiki/Deadlock">Wikipedia</a>: <em>In concurrent computing, <strong>deadlock</strong> is any situation in which no member of some group of entities can proceed because each waits for another member, including itself, to take action, such as sending a message or, more commonly, releasing a lock.</em></p>
 <p>What would happen if we define two singletons that are connected together ?</p>
-<p>So far we instantiated the <code>Lock</code> within the metaclass:</p>
+<p>So far, we instantiated the <code>Lock</code> within the metaclass:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SingletonThreadSafe(<span class="bu">type</span>):</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    _instances <span class="op">=</span> {}</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    _lock <span class="op">=</span> Lock()</span>
@@ -554,7 +552,8 @@ DBConnection is a Singleton</code></pre>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
-<p>We’ve seen a lot of ways to implement a Singleton in Python. Whats mattered the most was the journey and questioning the data model in Python and how we can be sure we access the object we want in single or multithreaded environments.</p>
+<p>On the path to designing the purest singleton we could, we reviewed how Python handles instantiation in its world of “everything is object”. We saw how inheritance could perturb instantiation and how metaclasses helped taking back control.</p>
+<p>We challenged our solution in multithreaded environments and learnt how to cope with <em>race conditions</em> and <em>deadlocks</em>. It pushed us to dive a little further into metaclasses. After every attempt, our Singleton got more robust, our understanding of Instantiation got deeper.</p>
 
 
 </section>
@@ -704,7 +703,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script>
-<script src="https://giscus.app/client.js" data-repo="x0s/blog" data-repo-id="R_kgDOJK334w" data-category="General" data-category-id="DIC_kwDOJK33484CU8Pb" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="dark" data-lang="en" crossorigin="anonymous" async="">
+<script src="https://giscus.app/client.js" data-repo="x0s/blog" data-repo-id="R_kgDOJK334w" data-category="General" data-category-id="DIC_kwDOJK33484CU8Pb" data-mapping="title" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="top" data-theme="light" data-lang="en" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
 
