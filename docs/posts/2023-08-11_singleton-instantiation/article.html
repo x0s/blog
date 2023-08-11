@@ -241,7 +241,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Attempt 3: Multithreads Racing</li>
 <li>Attempt 4: Multithreads Deadlocking</li>
 </ul>
-<p>Before attempting, let’s write an helper function to check if an object is a singleton or not:</p>
+<p>Before attempting, let’s write a helper function to check if an object is a singleton or not:</p>
 <div class="cell" data-execution_count="64">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> is_singleton(cls: <span class="bu">type</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>cls<span class="sc">.</span><span class="va">__name__</span><span class="sc">}</span><span class="ss"> </span><span class="sc">{</span><span class="st">'is'</span> <span class="cf">if</span> cls() <span class="kw">is</span> cls() <span class="cf">else</span> <span class="st">'is not'</span><span class="sc">}</span><span class="ss"> a Singleton"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -289,7 +289,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Logger(Singleton, LoggerBase): <span class="cf">pass</span></span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Risk 1: Reverting Bases</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Risk 1: Reversing Bases</span></span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LoggerReversed(LoggerBase, Singleton): <span class="cf">pass</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Risk 2: Overriding __new__</span></span>
@@ -305,7 +305,7 @@ LoggerReversed is not a Singleton
 LoggerChild is not a Singleton</code></pre>
 </div>
 </div>
-<p>It is a bit annoying that our Singleton can be broken so easily. But wait, in Python exist Classes responsible for Class creation, they are called <strong>Metaclasses</strong>, (like class of a class). We will see in next attempt how to use metaclasses to control instantiation upstream to inheritance wouldn’t bother us anymore</p>
+<p>It is a bit annoying that our Singleton can be broken so easily. But in Python, <strong>Metaclasses</strong> are responsible for Class creation(like class of a class). We will see in next attempt how to use metaclasses to control instantiation upstream to inheritance.</p>
 </section>
 <section id="attempt-2-metaclass-calling" class="level2">
 <h2 class="anchored" data-anchor-id="attempt-2-metaclass-calling">Attempt 2: Metaclass Calling</h2>
